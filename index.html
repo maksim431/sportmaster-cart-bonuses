@@ -404,9 +404,9 @@ var rub=function(n){return fmt(n)+' ₽'};
 var plural=function(n,a,b,c){n=Math.abs(n)%100;var m=n%10;if(n>10&&n<20)return c;if(m>1&&m<5)return b;if(m===1)return a;return c};
 
 /* Товары (данные вымышлены) */
-var IMG=function(id,pos){return '<img src="https://images.unsplash.com/'+id+'?w=320&h=400&fit=crop&crop=center&q=75&auto=format" alt="" loading="lazy" style="object-position:'+(pos||'center')+'" onerror="this.remove()">'};
+var IMG=function(id,contain){return contain?'<img src="https://images.unsplash.com/'+id+'?w=480&q=75&auto=format" alt="" loading="lazy" style="object-fit:contain;background:#fff" onerror="this.remove()">':'<img src="https://images.unsplash.com/'+id+'?w=320&h=400&fit=crop&crop=center&q=75&auto=format" alt="" loading="lazy" onerror="this.remove()">'};
 var ART={
- run:IMG('photo-1786379582231-f4a593cacf2d','60% center'),
+ run:IMG('photo-1786379582231-f4a593cacf2d',true),
  jacket:IMG('photo-1611308725032-74f0a551d018'),
  tee:IMG('photo-1778671394516-8270eac13c42'),
  bag:IMG('photo-1553062407-98eeb64c6a62')
