@@ -16,6 +16,9 @@
 ## Как измерить
 A/B-тест: конверсия корзины в заказ, доля списанных бонусов, доля сгоревших акционных, обращения в поддержку про бонусы, оценки в сторах.
 
+## Фото
+Фото товаров с [Unsplash](https://unsplash.com): Gabre Cameron, Hamed Darzi, Avtar Singh, Sun Lingyan.
+
 ## Автор
 Максим Кощеев, UX/UI и продуктовый дизайнер
 [Портфолио](https://portfoliomaksim.framer.website/) · [Telegram @maksim_koshcheev](https://t.me/maksim_koshcheev)
