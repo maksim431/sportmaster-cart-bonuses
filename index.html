@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Спортмастер · концепт корзины «Как посчитана цена»</title>
+<meta name="description" content="Концепт экрана корзины: прозрачный расчёт цены и бонусов. UX/UI: Максим Кощеев. Не связан с компанией Спортмастер.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Токены, снятые с продуктов компании */
+  --color-primary:#1551E5;
+  --color-primary-hover:#0F43C7;
+  --color-primary-bg:rgba(21,81,229,.08);
+  --color-primary-bg-strong:rgba(21,81,229,.14);
+  --color-sale:#E5202E;
+  --color-sale-bg:rgba(229,32,46,.10);
+  --color-badge-dark:#3A3F4B;
+  --color-yellow:#FFDD2D;
+  --color-yellow-bg:#FFF7CC;
+  --color-yellow-text:#6B5600;
+  --color-success:#14A44D;
+  --color-success-bg:rgba(20,164,77,.10);
+  --color-text:#16181D;
+  --color-text-2:#5E6371;
+  --color-text-3:#9196A1;
+  --color-bg-page:#F2F3F5;
+  --color-bg-surface:#FFFFFF;
+  --color-bg-fill:#F2F3F5;
+  --color-divider:#E8E9EC;
+  --radius-s:8px; --radius-m:12px; --radius-l:20px; --radius-xl:28px; --radius-pill:999px;
+  --shadow-card:0 8px 22px rgba(22,24,29,.05);
+  --shadow-sheet:0 -8px 40px rgba(22,24,29,.18);
+  --font:'Onest',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--color-bg-page)}
+body{font-family:var(--font);color:var(--color-text);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* Шапка */
+.topbar{background:var(--color-primary);color:#fff}
+.topbar__in{max-width:1240px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px}
+.brand{font-weight:700;font-size:21px;letter-spacing:-.02em;font-style:italic}
+.concept-chip{font-size:12px;font-weight:600;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:var(--radius-pill)}
+.topbar__sp{flex:1}
+.topbar__btn{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:9px 14px;border-radius:var(--radius-pill);background:rgba(255,255,255,.16)}
+.topbar__btn:hover{background:rgba(255,255,255,.26)}
+.search{flex:1;max-width:520px;background:#fff;border-radius:var(--radius-pill);height:40px;display:flex;align-items:center;padding:0 16px;color:var(--color-text-3);font-size:14px;gap:8px}
+
+/* Раскладка */
+.page{max-width:1240px;margin:0 auto;padding:24px 24px 120px}
+.crumbs{font-size:13px;color:var(--color-text-3);margin-bottom:10px}
+.h1row{display:flex;align-items:baseline;gap:12px;margin-bottom:20px}
+h1{font-size:32px;font-weight:700;letter-spacing:-.02em}
+.h1count{color:var(--color-text-3);font-size:18px;font-weight:500}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--color-bg-surface);border-radius:var(--radius-l);padding:20px;box-shadow:var(--shadow-card)}
+
+/* Плашка сгорающих бонусов */
+.burn{display:flex;gap:16px;align-items:center;padding:16px 20px;border-radius:var(--radius-l);background:linear-gradient(100deg,#FFF1F2 0%,#FFFFFF 70%);box-shadow:var(--shadow-card)}
+.burn__ico{flex:none;width:52px;height:52px}
+.burn__t{font-weight:600;font-size:16px}
+.burn__s{font-size:13px;color:var(--color-text-2)}
+.burn__timer{font-variant-numeric:tabular-nums;color:var(--color-sale);font-weight:600}
+.burn.is-ok{background:linear-gradient(100deg,#EAF8F0 0%,#FFFFFF 70%)}
+.burn.is-ok .burn__timer{color:var(--color-success)}
+
+/* Товары */
+.items{padding:8px 20px}
+.items__head{display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px}
+.items__head h2{font-size:18px;font-weight:600}
+.link{color:var(--color-primary);font-weight:500;font-size:14px}
+.link:hover{color:var(--color-primary-hover)}
+.item{display:grid;grid-template-columns:104px minmax(0,1fr) auto;gap:16px;padding:16px 0;border-top:1px solid var(--color-divider);animation:fade .25s ease}
+.item:first-of-type{border-top:0}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.thumb{width:104px;height:120px;border-radius:var(--radius-m);background:var(--color-bg-fill);display:grid;place-items:center;overflow:hidden}
+.thumb svg{width:86%;height:auto}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.badge{font-size:11px;font-weight:600;padding:3px 7px;border-radius:5px;line-height:1.2}
+.badge--sale{background:var(--color-sale);color:#fff}
+.badge--dark{background:var(--color-badge-dark);color:#fff}
+.badge--yellow{background:var(--color-yellow);color:#2B2300}
+.badge--club{background:var(--color-primary);color:#fff}
+.item__name{font-size:15px;font-weight:500;line-height:1.35}
+.item__meta{font-size:13px;color:var(--color-text-3);margin-top:2px}
+.qty{display:inline-flex;align-items:center;background:var(--color-bg-fill);border-radius:var(--radius-pill);margin-top:12px;height:36px}
+.qty button{width:36px;height:36px;border-radius:50%;font-size:18px;line-height:1;color:var(--color-text-2)}
+.qty button:hover{color:var(--color-primary)}
+.qty button:disabled{opacity:.35;cursor:default}
+.qty span{min-width:22px;text-align:center;font-weight:600;font-size:14px}
+.ctrl{display:flex;align-items:center;gap:8px;margin-top:12px}
+.ctrl .qty{margin-top:0}
+.item__acts{display:flex;gap:2px}
+.icobtn{width:36px;height:36px;border-radius:50%;display:inline-grid;place-items:center;color:var(--color-text-3)}
+.icobtn:hover{background:var(--color-bg-fill);color:var(--color-text)}
+.item__right{text-align:right;min-width:150px}
+.price{font-size:20px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.price--sale{color:var(--color-sale)}
+.old{font-size:13px;color:var(--color-text-3);text-decoration:line-through;white-space:nowrap}
+
+/* НОВОЕ: строка бонусов у товара */
+.bline{grid-column:2 / 4;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-m);font-size:13px;text-align:left;width:100%;transition:background .15s}
+.bline:hover{filter:brightness(.98)}
+.bline__ico{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700}
+.bline__txt{flex:1;min-width:0}
+.bline__txt b{font-weight:600}
+.bline__why{flex:none;font-weight:500;color:var(--color-primary);white-space:nowrap}
+.bline--ok{background:var(--color-primary-bg)}
+.bline--ok .bline__ico{background:var(--color-primary);color:#fff}
+.bline--cap{background:var(--color-yellow-bg)}
+.bline--cap .bline__ico{background:#F2C200;color:#2B2300}
+.bline--no{background:var(--color-bg-fill);color:var(--color-text-2)}
+.bline--no .bline__ico{background:#D5D8DE;color:#fff}
+.bline--off{background:var(--color-bg-fill);color:var(--color-text-3)}
+.bline--off .bline__ico{background:#D5D8DE;color:#fff}
+
+/* Правая колонка */
+.aside{position:sticky;top:16px;display:flex;flex-direction:column;gap:16px}
+.sumh{font-size:18px;font-weight:600;margin-bottom:14px}
+.bonus-box{background:var(--color-bg-fill);border-radius:var(--radius-m);padding:14px}
+.bonus-row{display:flex;align-items:center;gap:12px}
+.coin{flex:none;width:36px;height:36px}
+.bonus-row__t{flex:1;font-size:14px;line-height:1.3}
+.bonus-row__t b{font-size:16px}
+.bonus-row__t small{display:block;color:var(--color-text-2);font-size:12px}
+.switch{position:relative;width:48px;height:28px;border-radius:var(--radius-pill);background:#C9CDD4;flex:none;transition:background .2s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.15);transition:transform .2s}
+.switch[aria-checked="true"]{background:var(--color-primary)}
+.switch[aria-checked="true"]::after{transform:translateX(20px)}
+.wallet{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.wchip{font-size:12px;padding:5px 10px;border-radius:var(--radius-pill);background:#fff;color:var(--color-text-2)}
+.wchip b{color:var(--color-text);font-weight:600}
+.wchip--burn b{color:var(--color-sale)}
+
+.promo{display:flex;gap:8px;margin-top:12px}
+.field{flex:1;height:44px;border-radius:var(--radius-m);background:var(--color-bg-fill);border:2px solid transparent;padding:0 14px;outline:none;font-size:14px;text-transform:uppercase;min-width:0}
+.field::placeholder{text-transform:none;color:var(--color-text-3)}
+.field:focus{border-color:var(--color-primary);background:#fff}
+.field.is-error{border-color:var(--color-sale);background:#fff}
+.btn2{height:44px;padding:0 16px;border-radius:var(--radius-m);background:var(--color-primary-bg);color:var(--color-primary);font-weight:600;font-size:14px;white-space:nowrap}
+.btn2:hover{background:var(--color-primary-bg-strong)}
+.promo-msg{font-size:12px;margin-top:6px;min-height:0}
+.promo-msg.err{color:var(--color-sale)}
+.promo-on{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:var(--radius-m);background:var(--color-success-bg);font-size:13px}
+.promo-on b{font-weight:600}
+.promo-on .sp{flex:1}
+
+.lines{margin-top:16px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.line{display:flex;justify-content:space-between;gap:12px}
+.line span:first-child{color:var(--color-text-2)}
+.line .neg{color:var(--color-sale);font-weight:500}
+.line .neg.blue{color:var(--color-primary)}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:14px;border-top:1px solid var(--color-divider)}
+.total__l{font-size:16px;font-weight:600}
+.total__v{font-size:26px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
+.saved{font-size:13px;color:var(--color-success);font-weight:500;text-align:right;margin-top:2px}
+
+/* НОВОЕ: как посчитана цена */
+.how{margin-top:14px;border-radius:var(--radius-m);background:var(--color-primary-bg)}
+.how__btn{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;font-weight:600;font-size:14px;color:var(--color-primary);text-align:left}
+.how__btn svg{transition:transform .2s;margin-left:auto}
+.how.is-open .how__btn svg{transform:rotate(180deg)}
+.how__body{display:none;padding:0 14px 14px}
+.how.is-open .how__body{display:block}
+.stack{display:flex;height:14px;border-radius:var(--radius-pill);overflow:hidden;background:#fff;margin:6px 0 10px}
+.stack i{display:block;height:100%}
+.legend{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend .dot{width:10px;height:10px;border-radius:3px;flex:none}
+.legend .v{margin-left:auto;font-weight:600;white-space:nowrap}
+.how__note{font-size:12px;color:var(--color-text-2);margin-top:10px;line-height:1.45}
+.best{display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-top:10px;padding:10px;background:#fff;border-radius:10px;color:var(--color-text-2)}
+.best b{color:var(--color-text)}
+
+.cta{width:100%;height:52px;border-radius:var(--radius-pill);background:var(--color-primary);color:#fff;font-weight:600;font-size:16px;margin-top:16px;transition:background .15s}
+.cta:hover{background:var(--color-primary-hover)}
+.cta:disabled{background:#C9CDD4;cursor:default}
+.fine{font-size:12px;color:var(--color-text-3);text-align:center;margin-top:10px}
+.rules-link{display:flex;align-items:center;gap:12px;padding:16px 20px;text-align:left;width:100%}
+.rules-link .t{flex:1;font-size:14px}
+.rules-link .t b{display:block;font-weight:600}
+.rules-link .t span{color:var(--color-text-2);font-size:13px}
+
+/* Пусто */
+.empty{text-align:center;padding:40px 24px 48px}
+.empty svg{width:220px;height:auto;margin:0 auto 12px;display:block}
+.empty h2{font-size:22px;font-weight:700;margin-bottom:6px}
+.empty p{color:var(--color-text-2);max-width:380px;margin:0 auto 20px}
+.empty .cta{max-width:280px;margin:0 auto}
+
+/* Мобильная панель */
+.mbar{display:none}
+
+/* Шторка / модалка */
+.overlay{position:fixed;inset:0;background:rgba(14,18,30,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:50;display:none;align-items:center;justify-content:center;padding:24px}
+.overlay.is-open{display:flex;animation:ov .2s ease}
+@keyframes ov{from{opacity:0}to{opacity:1}}
+.sheet{background:#fff;border-radius:var(--radius-xl);width:100%;max-width:520px;max-height:calc(100vh - 48px);overflow:auto;position:relative;box-shadow:var(--shadow-sheet);animation:up .25s ease}
+@keyframes up{from{transform:translateY(16px);opacity:.6}to{transform:none;opacity:1}}
+.grab{width:40px;height:4px;border-radius:2px;background:#D5D8DE;margin:10px auto 0;display:none}
+.sheet__in{padding:24px}
+.sheet__close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:var(--color-bg-fill);display:grid;place-items:center;z-index:2}
+.about .sheet__close{background:rgba(255,255,255,.22);color:#fff}
+.sheet h3{font-size:20px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px;padding-right:40px}
+.sheet .sub{color:var(--color-text-2);font-size:14px;margin-bottom:16px}
+.ladder{display:flex;flex-direction:column;background:var(--color-bg-fill);border-radius:var(--radius-m);padding:4px 14px}
+.ladder div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;font-size:14px;border-top:1px solid #E3E5E9}
+.ladder div:first-child{border-top:0}
+.ladder .tot{font-weight:700;font-size:16px}
+.ladder .muted{color:var(--color-text-3)}
+.limits{margin:18px 0 6px}
+.limits__bar{position:relative;height:16px;border-radius:var(--radius-pill);background:var(--color-bg-fill);overflow:visible;display:flex}
+.limits__bar i{display:block;height:100%}
+.limits__bar i:first-child{border-radius:var(--radius-pill) 0 0 var(--radius-pill)}
+.mark{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--color-text)}
+.mark span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;white-space:nowrap}
+.limits__cap{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-3);margin-top:8px}
+.verdict{display:flex;gap:10px;padding:12px 14px;border-radius:var(--radius-m);font-size:14px;margin-top:14px}
+.verdict.ok{background:var(--color-primary-bg)}
+.verdict.cap{background:var(--color-yellow-bg)}
+.verdict.no{background:var(--color-bg-fill)}
+.rule{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--color-divider)}
+.rule:first-of-type{border-top:0}
+.rule__n{flex:none;width:36px;height:36px;border-radius:12px;background:var(--color-primary-bg);color:var(--color-primary);font-weight:700;display:grid;place-items:center}
+.rule b{display:block;font-weight:600;font-size:15px}
+.rule p{color:var(--color-text-2);font-size:14px}
+.sheet .cta{margin-top:20px}
+
+/* О концепции */
+.about{max-width:640px}
+.about__hero{background:linear-gradient(160deg,#1551E5 0%,#3C7BFF 100%);border-radius:var(--radius-xl) var(--radius-xl) 0 0;color:#fff;padding:28px 28px 32px;position:relative;overflow:hidden;min-height:190px}
+.about__hero h3{color:#fff;font-size:26px;max-width:330px;line-height:1.15}
+.about__hero p{opacity:.85;font-size:14px;margin-top:8px;max-width:300px}
+.about__hero svg{position:absolute;right:-10px;bottom:-24px;width:250px}
+.about__tag{display:inline-block;font-size:12px;font-weight:600;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:var(--radius-pill);margin-bottom:12px}
+.about__grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.about__cell{background:var(--color-bg-fill);border-radius:var(--radius-m);padding:14px}
+.about__cell .k{font-size:12px;font-weight:600;color:var(--color-primary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.about__cell p{font-size:14px;line-height:1.45}
+.author{display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px;border-radius:var(--radius-m);background:var(--color-primary-bg);font-size:14px}
+.author a{color:var(--color-primary);font-weight:500;text-decoration:none}
+.author a:hover{text-decoration:underline}
+.disc{font-size:12px;color:var(--color-text-3);margin-top:12px}
+
+/* Тост */
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#16181D;color:#fff;border-radius:var(--radius-m);padding:12px 16px;font-size:14px;display:flex;align-items:center;gap:14px;opacity:0;pointer-events:none;transition:all .25s;z-index:60;max-width:calc(100vw - 32px)}
+.toast.is-on{opacity:1;transform:translateX(-50%);pointer-events:auto}
+.toast button{color:#8FB0FF;font-weight:600}
+
+@media (max-width:1023px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .aside{position:static}
+}
+@media (max-width:560px){
+  .topbar__in{padding:12px 16px;gap:10px}
+  .search{display:none}
+  .brand{font-size:19px}
+  .topbar__btn span{display:none}
+  .topbar__btn{padding:9px}
+  .page{padding:12px 12px 140px}
+  .crumbs{display:none}
+  h1{font-size:24px}
+  .h1row{margin:4px 4px 14px}
+  .card{padding:16px;border-radius:var(--radius-l)}
+  .items{padding:4px 16px}
+  .item{grid-template-columns:80px minmax(0,1fr);grid-template-areas:"thumb price" "thumb mid" "bl bl";gap:4px 12px}
+  .thumb{width:80px;height:96px;grid-area:thumb}
+  .item__right{grid-area:price;text-align:left;min-width:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .item__mid{grid-area:mid}
+  .bline{grid-area:bl;margin-top:8px}
+  .price{font-size:18px}
+  .bline__why{display:none}
+  .burn{padding:14px 16px;gap:12px}
+  .burn__ico{width:44px;height:44px}
+  .burn__t{font-size:15px}
+  .aside .cta.desk{display:none}
+  .total__v{font-size:24px}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:12px 16px calc(12px + env(safe-area-inset-bottom));gap:12px;align-items:center;box-shadow:0 -6px 24px rgba(22,24,29,.08)}
+  .mbar__sum{flex:1;line-height:1.2}
+  .mbar__sum b{font-size:20px;display:block;white-space:nowrap}
+  .mbar__sum span{font-size:12px;color:var(--color-success);font-weight:500}
+  .mbar .cta{margin:0;width:auto;padding:0 22px;flex:none;height:48px}
+  .overlay{align-items:flex-end;padding:0}
+  .sheet{border-radius:var(--radius-xl) var(--radius-xl) 0 0;max-height:92vh;max-width:none}
+  .grab{display:block}
+  .sheet__in{padding:16px 16px 28px}
+  .about__hero{border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:24px 20px 28px;min-height:200px}
+  .about__hero h3{font-size:22px;max-width:220px}
+  .about__hero p{max-width:200px}
+  .about__hero svg{width:180px;right:-20px;bottom:-20px}
+  .about__grid{grid-template-columns:1fr}
+  .toast{bottom:92px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__in">
+    <div class="brand" aria-label="Спортмастер">спортмастер</div>
+    <span class="concept-chip">концепт</span>
+    <div class="search" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Искать в Спортмастере
+    </div>
+    <div class="topbar__sp"></div>
+    <button class="topbar__btn" id="openAbout" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+      <span>О концепции</span>
+    </button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="crumbs">Главная · Корзина</div>
+  <div class="h1row"><h1>Корзина</h1><span class="h1count" id="count"></span></div>
+
+  <div class="layout" id="layout">
+    <div class="col" id="left">
+      <!-- НОВОЕ: сгорающие бонусы -->
+      <div class="burn" id="burn" role="status">
+        <svg class="burn__ico" viewBox="0 0 56 56" aria-hidden="true">
+          <defs>
+            <radialGradient id="cg1" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#FF8A8F"/><stop offset=".55" stop-color="#E5202E"/><stop offset="1" stop-color="#A50F1A"/></radialGradient>
+            <radialGradient id="cg1b" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#7FD9A5"/><stop offset=".55" stop-color="#14A44D"/><stop offset="1" stop-color="#0B6E33"/></radialGradient>
+          </defs>
+          <circle cx="28" cy="30" r="22" fill="#000" opacity=".08"/>
+          <circle id="burnCoin" cx="28" cy="27" r="22" fill="url(#cg1)"/>
+          <ellipse cx="21" cy="17" rx="9" ry="5" fill="#fff" opacity=".35"/>
+          <path id="burnGlyph" d="M28 15c4 5 8 8 8 14a8 8 0 0 1-16 0c0-3 1.5-5 3.5-7 .5 3 2 4 3.5 4-1-4 0-8 1-11z" fill="#fff"/>
+        </svg>
+        <div>
+          <div class="burn__t" id="burnTitle"></div>
+          <div class="burn__s" id="burnSub"></div>
+        </div>
+      </div>
+
+      <section class="card items" aria-labelledby="itemsH">
+        <div class="items__head"><h2 id="itemsH">Товары</h2><button class="link" id="clearAll" type="button">Удалить все</button></div>
+        <div id="list"></div>
+      </section>
+
+      <button class="card rules-link" id="openRules" type="button">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="rgba(21,81,229,.08)"/><path d="M20 12v1M20 17v11" stroke="#1551E5" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <span class="t"><b>Почему бонусы списались не на всё?</b><span>Четыре правила клубной программы простыми словами</span></span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9196A1" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+    </div>
+
+    <aside class="aside" id="aside">
+      <div class="card">
+        <div class="sumh">Ваш заказ</div>
+
+        <div class="bonus-box">
+          <div class="bonus-row">
+            <svg class="coin" viewBox="0 0 40 40" aria-hidden="true">
+              <defs><radialGradient id="cg2" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#7FA6FF"/><stop offset=".55" stop-color="#1551E5"/><stop offset="1" stop-color="#0A2F99"/></radialGradient></defs>
+              <circle cx="20" cy="20" r="18" fill="url(#cg2)"/><ellipse cx="14" cy="12" rx="7" ry="4" fill="#fff" opacity=".35"/>
+              <text x="20" y="26" text-anchor="middle" font-family="Onest,sans-serif" font-weight="700" font-size="16" fill="#fff">Б</text>
+            </svg>
+            <div class="bonus-row__t" id="bonusTxt"></div>
+            <button class="switch" id="bonusSwitch" role="switch" aria-checked="true" aria-label="Списать бонусы" type="button"></button>
+          </div>
+          <div class="wallet" id="wallet"></div>
+        </div>
+
+        <div id="promoWrap"></div>
+
+        <div class="lines" id="lines"></div>
+        <div class="total"><span class="total__l">Итого</span><span class="total__v" id="total"></span></div>
+        <div class="saved" id="saved"></div>
+
+        <!-- НОВОЕ: как посчитана цена -->
+        <div class="how" id="how">
+          <button class="how__btn" id="howBtn" type="button" aria-expanded="false">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16M7 15V9M12 15V5M17 15v-3"/></svg>
+            Как посчитана цена
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="how__body" id="howBody"></div>
+        </div>
+
+        <button class="cta desk" id="ctaDesk" type="button">Перейти к оформлению</button>
+        <div class="fine">Доставку и способ оплаты выберете на следующем шаге</div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div class="mbar" id="mbar">
+  <div class="mbar__sum"><b id="mTotal"></b><span id="mSaved"></span></div>
+  <button class="cta" id="ctaMob" type="button">Оформить</button>
+</div>
+
+<div class="overlay" id="ov" aria-hidden="true">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="grab"></div>
+    <button class="sheet__close" id="sheetClose" type="button" aria-label="Закрыть"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastTxt"></span><button id="toastAct" type="button"></button></div>
+
+<script>
+(function(){
+'use strict';
+var fmt=function(n){return Math.round(n).toLocaleString('ru-RU').replace(/,/g,' ')};
+var rub=function(n){return fmt(n)+' ₽'};
+var plural=function(n,a,b,c){n=Math.abs(n)%100;var m=n%10;if(n>10&&n<20)return c;if(m>1&&m<5)return b;if(m===1)return a;return c};
+
+/* Товары (данные вымышлены) */
+var ART={
+ run:'<svg viewBox="0 0 120 80"><path d="M10 52c10-2 22-14 30-26 4-6 10-6 13-1 5 8 14 13 26 16 14 3 24 7 30 14 3 4 1 8-4 8H14c-6 0-8-8-4-11z" fill="#1551E5"/><path d="M8 63h104v4c0 3-2 5-5 5H13c-3 0-5-2-5-5z" fill="#fff"/><path d="M8 63h104" stroke="#D5D8DE" stroke-width="2"/><path d="M40 38l10 6M45 32l10 6M50 27l9 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M70 50c12 1 24 4 34 10" stroke="#9DB8FF" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
+ jacket:'<svg viewBox="0 0 120 120"><path d="M40 18l20 8 20-8 22 12 8 50-14 4-4-30v52H28V54l-4 30-14-4 8-50z" fill="#2F6E4F"/><path d="M60 26v80" stroke="#1F4D36" stroke-width="3"/><path d="M28 50h64M28 70h64M28 90h64" stroke="#3E8A64" stroke-width="3"/><path d="M48 18l12 10 12-10" fill="none" stroke="#1F4D36" stroke-width="3"/></svg>',
+ tee:'<svg viewBox="0 0 120 120"><path d="M42 16c4 7 10 10 18 10s14-3 18-10l26 12-8 22-12-5v60H36V45l-12 5-8-22z" fill="#E9EBEF"/><path d="M42 16c4 7 10 10 18 10s14-3 18-10" fill="none" stroke="#C3C7CF" stroke-width="3"/><rect x="50" y="48" width="20" height="8" rx="2" fill="#E5202E"/></svg>',
+ bag:'<svg viewBox="0 0 120 120"><rect x="28" y="24" width="64" height="84" rx="22" fill="#3A3F4B"/><path d="M44 24c0-10 7-16 16-16s16 6 16 16" fill="none" stroke="#3A3F4B" stroke-width="6"/><rect x="38" y="60" width="44" height="34" rx="12" fill="#4B5160"/><path d="M38 72h44" stroke="#2C3039" stroke-width="2"/><rect x="54" y="40" width="12" height="6" rx="3" fill="#9196A1"/></svg>'
+};
+/*
+ type: club   клубная (персональная) цена, бонусы можно
+       sale   розничная скидка, бонусы можно
+       best   «Лучшая цена», бонусы и промокод нельзя
+       final  «Финальная цена», бонусы и промокод нельзя
+*/
+var BASE=[
+ {id:'a',name:'Кроссовки для бега мужские Demix Ultra Run 2',meta:'Размер 43 · синий',art:ART.run,orig:7999,price:6399,type:'club'},
+ {id:'b',name:'Куртка утеплённая мужская Outventure Ridge',meta:'Размер 50 · хвойный',art:ART.jacket,orig:12999,price:8999,type:'best'},
+ {id:'c',name:'Футболка мужская Kappa Logo Tape',meta:'Размер L · белый',art:ART.tee,orig:1999,price:1999,type:'final'},
+ {id:'d',name:'Рюкзак Columbia Atlas 25 л',meta:'Графитовый',art:ART.bag,orig:5499,price:3299,type:'sale'}
+];
+var items=BASE.map(function(x){return Object.assign({qty:1},x)});
+
+var WALLET={burn:3000,club:2400};
+var PROMOS={SPORT10:0.10,'БЕГ10':0.10};
+var state={useBonus:true,promo:null,lastRemoved:null};
+
+/* Расчёт по правилам клубной программы:
+   промокод 10% от цены (кроме «Лучшей» и «Финальной»),
+   бонусы до 30% от остатка, общая скидка от исходной цены не больше 50%. */
+function calc(promoRate){
+  var rows=items.map(function(it){
+    var eligible=(it.type==='club'||it.type==='sale');
+    var p=it.price*it.qty, o=it.orig*it.qty;
+    var promo=(eligible&&promoRate)?Math.round(p*promoRate):0;
+    var after=p-promo;
+    var cap30=eligible?Math.floor(after*0.30):0;
+    var cap50=eligible?Math.max(0,Math.floor(o*0.5)-(o-after)):0;
+    var max=Math.min(cap30,cap50);
+    var limit=!eligible?'none':(cap50<cap30?'50':'30');
+    return {it:it,eligible:eligible,o:o,p:p,promo:promo,after:after,cap30:cap30,cap50:cap50,max:max,limit:limit,bonus:0};
+  });
+  var bal=WALLET.burn+WALLET.club;
+  var need=rows.reduce(function(s,r){return s+r.max},0);
+  var spend=Math.min(bal,need);
+  var left=spend;
+  rows.forEach(function(r){var b=Math.min(r.max,left);r.bonus=b;left-=b});
+  var burnUsed=Math.min(WALLET.burn,spend);
+  var sum={orig:0,price:0,promo:0,bonus:spend};
+  rows.forEach(function(r){sum.orig+=r.o;sum.price+=r.p;sum.promo+=r.promo});
+  sum.total=sum.price-sum.promo-spend;
+  sum.retail=sum.orig-sum.price;
+  return {rows:rows,spend:spend,need:need,burnUsed:burnUsed,sum:sum};
+}
+
+function current(){
+  var r=calc(state.promo?PROMOS[state.promo]:0);
+  if(!state.useBonus){
+    r.rows.forEach(function(x){x.bonus=0});
+    r.sum.total+=r.spend;r.sum.bonus=0;r.burnUsed=0;r.spend=0;
+  }
+  return r;
+}
+
+/* Рендер */
+var $=function(id){return document.getElementById(id)};
+
+function blineHTML(r){
+  if(!r.eligible){
+    var why=r.it.type==='best'?'Лучшая цена':'Финальная цена';
+    return '<button class="bline bline--no" data-why="'+r.it.id+'" type="button"><span class="bline__ico">✕</span><span class="bline__txt">Бонусы не списываются: на товар действует «'+why+'»</span><span class="bline__why">Почему</span></button>';
+  }
+  if(!state.useBonus){
+    return '<button class="bline bline--off" data-why="'+r.it.id+'" type="button"><span class="bline__ico">Б</span><span class="bline__txt">Можно списать до <b>'+fmt(r.max)+'</b> '+plural(r.max,'бонус','бонуса','бонусов')+'. Списание выключено</span><span class="bline__why">Расчёт</span></button>';
+  }
+  if(r.bonus<r.max){
+    return '<button class="bline bline--cap" data-why="'+r.it.id+'" type="button"><span class="bline__ico">!</span><span class="bline__txt">Списано <b>'+fmt(r.bonus)+'</b> из '+fmt(r.max)+': бонусов на счёте не хватило</span><span class="bline__why">Расчёт</span></button>';
+  }
+  if(r.limit==='50'){
+    return '<button class="bline bline--cap" data-why="'+r.it.id+'" type="button"><span class="bline__ico">!</span><span class="bline__txt"><b>−'+fmt(r.bonus)+'</b> бонусами. Больше нельзя: скидка на товар уже почти 50%</span><span class="bline__why">Почему</span></button>';
+  }
+  return '<button class="bline bline--ok" data-why="'+r.it.id+'" type="button"><span class="bline__ico">✓</span><span class="bline__txt"><b>−'+fmt(r.bonus)+'</b> бонусами, это максимум для товара (30% цены)</span><span class="bline__why">Расчёт</span></button>';
+}
+
+function badgesHTML(it){
+  var b=[];
+  if(it.type==='club')b.push('<span class="badge badge--club">Персональная цена</span>');
+  if(it.type==='sale')b.push('<span class="badge badge--sale">−'+Math.round((1-it.price/it.orig)*100)+'%</span>');
+  if(it.type==='best')b.push('<span class="badge badge--yellow">Лучшая цена</span>');
+  if(it.type==='final')b.push('<span class="badge badge--dark">Финальная цена</span>');
+  return '<div class="badges">'+b.join('')+'</div>';
+}
+
+function render(){
+  var r=current();
+  var n=items.reduce(function(s,i){return s+i.qty},0);
+  $('count').textContent=n?n+' '+plural(n,'товар','товара','товаров'):'';
+
+  if(!items.length){renderEmpty();return}
+  $('aside').style.display='';$('burn').style.display='';$('openRules').style.display='';$('mbar').style.removeProperty('visibility');
+
+  $('list').innerHTML=r.rows.map(function(x){
+    var it=x.it, showOld=it.orig!==it.price;
+    var priceNow=x.p-x.promo;
+    return '<article class="item" data-id="'+it.id+'">'+
+      '<div class="thumb">'+it.art+'</div>'+
+      '<div class="item__mid">'+badgesHTML(it)+
+        '<div class="item__name">'+it.name+'</div><div class="item__meta">'+it.meta+'</div>'+
+        '<div class="ctrl"><span class="qty"><button type="button" data-dec="'+it.id+'" aria-label="Меньше" '+(it.qty<2?'disabled':'')+'>−</button><span>'+it.qty+'</span><button type="button" data-inc="'+it.id+'" aria-label="Больше" '+(it.qty>4?'disabled':'')+'>+</button></span>'+
+        '<span class="item__acts"><button class="icobtn" type="button" aria-label="В избранное"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></button><button class="icobtn" type="button" data-del="'+it.id+'" aria-label="Удалить"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></button></span></div>'+
+      '</div>'+
+      '<div class="item__right"><div class="price '+(showOld||x.promo?'price--sale':'')+'">'+rub(priceNow)+'</div>'+(showOld||x.promo?'<div class="old">'+rub(x.o)+'</div>':'')+'</div>'+
+      blineHTML(x)+
+    '</article>';
+  }).join('');
+
+  /* Бонусы */
+  var bal=WALLET.burn+WALLET.club;
+  $('bonusTxt').innerHTML=state.useBonus?('Списать <b>'+fmt(r.spend)+'</b><small>из '+fmt(bal)+' на счёте · 1 бонус = 1 ₽</small>'):('Списать бонусы<small>Можно списать до '+fmt(r.need>bal?bal:r.need)+' из '+fmt(bal)+'</small>');
+  $('bonusSwitch').setAttribute('aria-checked',state.useBonus?'true':'false');
+  $('wallet').innerHTML='<span class="wchip wchip--burn">Акционные <b>'+fmt(WALLET.burn)+'</b> · сгорят сегодня</span><span class="wchip">Клубные <b>'+fmt(WALLET.club)+'</b></span>';
+
+  /* Сгорающие */
+  var burnLeft=WALLET.burn-r.burnUsed;
+  var burnEl=$('burn');
+  if(burnLeft<=0){
+    burnEl.classList.add('is-ok');
+    $('burnCoin').setAttribute('fill','url(#cg1b)');
+    $('burnGlyph').setAttribute('d','M19 28l6 6 12-13');$('burnGlyph').setAttribute('fill','none');$('burnGlyph').setAttribute('stroke','#fff');$('burnGlyph').setAttribute('stroke-width','4');$('burnGlyph').setAttribute('stroke-linecap','round');$('burnGlyph').setAttribute('stroke-linejoin','round');
+    $('burnTitle').textContent='Все сгорающие бонусы пойдут в этот заказ';
+    $('burnSub').innerHTML='Списываем сначала акционные '+fmt(WALLET.burn)+', потом клубные. Акция до 23:59, осталось <span class="burn__timer" data-timer></span>';
+  }else{
+    burnEl.classList.remove('is-ok');
+    $('burnCoin').setAttribute('fill','url(#cg1)');
+    $('burnGlyph').setAttribute('d','M28 15c4 5 8 8 8 14a8 8 0 0 1-16 0c0-3 1.5-5 3.5-7 .5 3 2 4 3.5 4-1-4 0-8 1-11z');$('burnGlyph').setAttribute('fill','#fff');$('burnGlyph').removeAttribute('stroke');
+    $('burnTitle').textContent=fmt(burnLeft)+' '+plural(burnLeft,'бонус сгорит','бонуса сгорят','бонусов сгорят')+' через ';
+    $('burnTitle').insertAdjacentHTML('beforeend','<span class="burn__timer" data-timer></span>');
+    $('burnSub').textContent=state.useBonus?'На товары в корзине больше не списать. Добавьте товар без жёлтого ценника':'Включите списание бонусов, чтобы не потерять их';
+  }
+  tick();
+
+  /* Промокод */
+  if(state.promo){
+    $('promoWrap').innerHTML='<div class="promo-on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14A44D" stroke-width="2.4"><path d="m5 12 5 5 9-10"/></svg><span class="sp">Промокод <b>'+state.promo+'</b> · −'+rub(r.sum.promo)+'</span><button class="link" id="promoDel" type="button">Удалить</button></div>';
+  }else{
+    var prev=$('promoInput')?$('promoInput').value:'';
+    $('promoWrap').innerHTML='<form class="promo" id="promoForm" autocomplete="off"><label class="sr" for="promoInput">Промокод</label><input class="field" id="promoInput" placeholder="Промокод" maxlength="20" value="'+prev.replace(/"/g,'')+'"><button class="btn2" type="submit">Применить</button></form><div class="promo-msg" id="promoMsg"></div>';
+  }
+
+  /* Строки итога */
+  var L=[];
+  L.push(['Товары, '+n+' шт.',rub(r.sum.orig),'']);
+  if(r.sum.retail)L.push(['Скидки и персональные цены','−'+rub(r.sum.retail),'neg']);
+  if(r.sum.promo)L.push(['Промокод','−'+rub(r.sum.promo),'neg']);
+  if(r.sum.bonus)L.push(['Бонусы','−'+fmt(r.sum.bonus)+' Б','neg blue']);
+  $('lines').innerHTML=L.map(function(l){return '<div class="line"><span>'+l[0]+'</span><span class="'+l[2]+'">'+l[1]+'</span></div>'}).join('');
+  $('total').textContent=rub(r.sum.total);
+  var save=r.sum.orig-r.sum.total;
+  $('saved').textContent='Выгода '+rub(save);
+  $('mTotal').textContent=rub(r.sum.total);
+  $('mSaved').textContent='Выгода '+rub(save);
+
+  /* Как посчитана цена */
+  var o=r.sum.orig||1;
+  var segs=[[r.sum.total,'#16181D','К оплате'],[r.sum.retail,'#E5202E','Скидки и персональные цены'],[r.sum.promo,'#FF8A8F','Промокод'],[r.sum.bonus,'#1551E5','Бонусы']];
+  var noB=r.rows.filter(function(x){return !x.eligible});
+  var capped=r.rows.filter(function(x){return x.eligible&&x.limit==='50'});
+  var alt=compareBest();
+  $('howBody').innerHTML='<div class="stack">'+segs.filter(function(s){return s[0]>0}).map(function(s){return '<i style="width:'+(s[0]/o*100)+'%;background:'+s[1]+'"></i>'}).join('')+'</div>'+
+    '<div class="legend">'+segs.filter(function(s){return s[0]>0}).map(function(s){return '<div><span class="dot" style="background:'+s[1]+'"></span>'+s[2]+'<span class="v">'+(s[2]==='Бонусы'?fmt(s[0])+' Б':rub(s[0]))+'</span></div>'}).join('')+'</div>'+
+    '<div class="how__note">'+
+      (noB.length?'Не участвуют в бонусах: '+noB.map(function(x){return '«'+x.it.name.split(' ').slice(0,1)[0]+'» ('+(x.it.type==='best'?'Лучшая цена':'Финальная цена')+')'}).join(', ')+'. ':'')+
+      (capped.length?'У «'+capped.map(function(x){return x.it.name.split(' ')[0]}).join('», «')+'» бонусы ограничены, потому что общая скидка не может быть больше 50%. ':'')+
+      'Нажмите на строку под товаром, чтобы увидеть расчёт.</div>'+
+    (alt?'<div class="best"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14A44D" stroke-width="2.4" style="flex:none;margin-top:1px"><path d="m5 12 5 5 9-10"/></svg><span>'+alt+'</span></div>':'');
+}
+
+function compareBest(){
+  if(!state.useBonus)return '';
+  var withP=calc(PROMOS.SPORT10).sum.total, noP=calc(0).sum.total;
+  if(state.promo){
+    return noP>withP?'<b>Сочетание выгодное.</b> Промокод уменьшил бонусную часть, но вместе выходит на '+rub(noP-withP)+' дешевле, чем одними бонусами.':'<b>Без промокода выгоднее на '+rub(withP-noP)+'.</b> Промокод съедает лимит бонусов.';
+  }
+  return noP>withP?'Промокод SPORT10 сделал бы заказ дешевле ещё на <b>'+rub(noP-withP)+'</b>. Попробуйте применить его выше.':'';
+}
+
+function renderEmpty(){
+  $('list').innerHTML='<div class="empty"><svg viewBox="0 0 240 170" aria-hidden="true"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FA6FF"/><stop offset="1" stop-color="#1551E5"/></linearGradient><radialGradient id="eg2" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFE77A"/><stop offset=".6" stop-color="#F5B800"/><stop offset="1" stop-color="#B98400"/></radialGradient></defs><ellipse cx="120" cy="156" rx="78" ry="9" fill="#16181D" opacity=".07"/><path d="M58 58h124l-12 80a12 12 0 0 1-12 10H82a12 12 0 0 1-12-10z" fill="url(#eg)"/><path d="M88 58c0-20 14-34 32-34s32 14 32 34" fill="none" stroke="#1551E5" stroke-width="9" stroke-linecap="round"/><ellipse cx="96" cy="78" rx="22" ry="7" fill="#fff" opacity=".28"/><circle cx="182" cy="44" r="22" fill="url(#eg2)"/><ellipse cx="175" cy="36" rx="8" ry="4" fill="#fff" opacity=".5"/><text x="182" y="51" text-anchor="middle" font-family="Onest,sans-serif" font-weight="700" font-size="18" fill="#fff">Б</text></svg><h2>В корзине пусто</h2><p>У вас '+fmt(WALLET.burn+WALLET.club)+' бонусов, из них '+fmt(WALLET.burn)+' акционных сгорят сегодня. Их можно потратить на товары без жёлтого ценника.</p><button class="cta" id="restore" type="button">Вернуть товары</button></div>';
+  $('aside').style.display='none';$('burn').style.display='none';$('openRules').style.display='none';
+  $('mbar').style.visibility='hidden';
+}
+
+/* Таймер до 23:59 */
+function tick(){
+  var now=new Date(),end=new Date(now);end.setHours(23,59,59,0);
+  var s=Math.max(0,Math.floor((end-now)/1000));
+  var h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=s%60;
+  var t=h+' ч '+String(m).padStart(2,'0')+' мин '+String(sec).padStart(2,'0')+' с';
+  document.querySelectorAll('[data-timer]').forEach(function(e){e.textContent=t});
+}
+setInterval(tick,1000);
+
+/* Шторки */
+var lastFocus=null;
+function openSheet(html,cls){
+  lastFocus=document.activeElement;
+  $('sheetBody').innerHTML=html;
+  $('sheet').className='sheet'+(cls?' '+cls:'');
+  $('ov').classList.add('is-open');$('ov').setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+  setTimeout(function(){$('sheetClose').focus()},30);
+}
+function closeSheet(){
+  $('ov').classList.remove('is-open');$('ov').setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+
+function whySheet(id){
+  var r=current();var x=r.rows.filter(function(q){return q.it.id===id})[0];if(!x)return;
+  var it=x.it;
+  var ladder='<div class="ladder"><div><span>Цена без скидок</span><span>'+rub(x.o)+'</span></div>';
+  if(x.o!==x.p)ladder+='<div><span>'+(it.type==='club'?'Персональная цена клуба':it.type==='sale'?'Скидка магазина':'«'+(it.type==='best'?'Лучшая':'Финальная')+' цена»')+'</span><span style="color:var(--color-sale)">−'+rub(x.o-x.p)+'</span></div>';
+  if(x.promo)ladder+='<div><span>Промокод '+state.promo+' (10%)</span><span style="color:var(--color-sale)">−'+rub(x.promo)+'</span></div>';
+  if(x.eligible)ladder+='<div><span>Бонусы</span><span style="color:var(--color-primary)">'+(x.bonus?'−'+fmt(x.bonus)+' Б':'0')+'</span></div>';
+  else ladder+='<div class="muted"><span>Бонусы</span><span>не участвуют</span></div>';
+  ladder+='<div class="tot"><span>К оплате</span><span>'+rub(x.after-x.bonus)+'</span></div></div>';
+
+  var o=x.o, disc=o-x.after, b=x.bonus, room=x.eligible?x.max-b:0;
+  var bar='<div class="limits"><div class="limits__bar"><i style="width:'+(disc/o*100)+'%;background:#E5202E"></i><i style="width:'+(b/o*100)+'%;background:#1551E5"></i>'+(room>0?'<i style="width:'+(room/o*100)+'%;background:repeating-linear-gradient(45deg,#BCD0FF 0 4px,#E3EBFF 4px 8px)"></i>':'')+'<span class="mark" style="left:50%"><span>50%</span></span></div><div class="limits__cap"><span>0</span><span>Потолок общей скидки: '+rub(Math.floor(o*0.5))+'</span></div></div>';
+
+  var v;
+  if(!x.eligible){
+    v='<div class="verdict no"><span>✕</span><span>На товары с ценником «'+(it.type==='best'?'Лучшая цена':'Финальная цена')+'» уже действует максимальная скидка магазина, поэтому бонусы и промокоды к ним не применяются.</span></div>';
+  }else if(!state.useBonus){
+    v='<div class="verdict ok"><span>i</span><span>Списание выключено. Если включить, на этот товар уйдёт до <b>'+fmt(x.max)+'</b> бонусов.</span></div>';
+  }else if(x.limit==='50'){
+    v='<div class="verdict cap"><span>!</span><span>Скидка магазина'+(x.promo?' и промокод':'')+' уже дают '+Math.round(disc/o*100)+'%. Общая скидка не может быть больше 50%, поэтому бонусами осталось оплатить только <b>'+fmt(x.max)+'</b>, а не 30% цены ('+fmt(x.cap30)+').</span></div>';
+  }else{
+    v='<div class="verdict ok"><span>✓</span><span>Бонусами можно оплатить до 30% цены после скидок и промокода. Для этого товара это <b>'+fmt(x.cap30)+'</b> бонусов, списали максимум.</span></div>';
+  }
+  openSheet('<div class="sheet__in"><h3 id="sheetTitle">Как посчитана цена</h3><div class="sub">'+it.name+(it.qty>1?' · '+it.qty+' шт.':'')+'</div>'+ladder+(x.eligible?bar:'')+v+'<button class="cta" type="button" data-close>Понятно</button></div>');
+}
+
+function rulesSheet(){
+  openSheet('<div class="sheet__in"><h3 id="sheetTitle">Почему бонусы списались не на всё</h3><div class="sub">Четыре правила клубной программы, по которым считается каждая корзина</div>'+
+   '<div class="rule"><span class="rule__n">30%</span><div><b>Бонусами до 30% цены</b><p>Считается от цены товара после скидок и промокода.</p></div></div>'+
+   '<div class="rule"><span class="rule__n">50%</span><div><b>Общая скидка не больше 50%</b><p>Скидка магазина, промокод и бонусы вместе. Если товар уже со скидкой 40%, бонусами оплатится только оставшиеся 10%.</p></div></div>'+
+   '<div class="rule"><span class="rule__n" style="background:#FFF7CC;color:#6B5600">%</span><div><b>Жёлтые ценники без бонусов</b><p>«Лучшая цена» и «Финальная цена» уже со скидкой магазина, к ним бонусы и промокоды не применяются.</p></div></div>'+
+   '<div class="rule"><span class="rule__n" style="background:rgba(229,32,46,.10);color:#E5202E">⏱</span><div><b>Сначала сгорающие</b><p>Мы списываем акционные бонусы раньше клубных, чтобы они не пропали.</p></div></div>'+
+   '<button class="cta" type="button" data-close>Понятно</button></div>');
+}
+
+function aboutSheet(){
+  openSheet('<div class="about__hero"><span class="about__tag">Концепт экрана</span><h3 id="sheetTitle">Корзина, в которой видно, как посчитана цена</h3><p>Каждый рубль скидки и каждый бонус с причиной</p>'+
+   '<svg viewBox="0 0 260 200" aria-hidden="true"><defs><radialGradient id="ag1" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#BFD2FF"/><stop offset="1" stop-color="#6E95F5"/></radialGradient><radialGradient id="ag2" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FF9AA0"/><stop offset=".55" stop-color="#E5202E"/><stop offset="1" stop-color="#9E0E18"/></radialGradient></defs><rect x="40" y="70" width="150" height="130" rx="28" fill="url(#ag1)" transform="rotate(-8 115 135)"/><rect x="62" y="98" width="90" height="12" rx="6" fill="#1551E5" opacity=".75" transform="rotate(-8 115 135)"/><rect x="62" y="122" width="60" height="12" rx="6" fill="#1551E5" opacity=".45" transform="rotate(-8 115 135)"/><rect x="62" y="146" width="104" height="12" rx="6" fill="#1551E5" opacity=".3" transform="rotate(-8 115 135)"/><circle cx="196" cy="70" r="40" fill="url(#ag2)"/><ellipse cx="184" cy="54" rx="14" ry="7" fill="#fff" opacity=".45"/><text x="196" y="84" text-anchor="middle" font-family="Onest,sans-serif" font-weight="700" font-size="38" fill="#fff">%</text></svg></div>'+
+   '<div class="sheet__in"><div class="about__grid">'+
+   '<div class="about__cell"><div class="k">Проблема</div><p>Правила бонусов сложные: до 30% цены, общая скидка до 50%, жёлтые ценники без бонусов. В корзине видна только итоговая цифра, и покупатели в отзывах пишут, что не понимают цену и уходят.</p></div>'+
+   '<div class="about__cell"><div class="k">Гипотеза</div><p>Если показать причину у каждого товара и разбор итога, конверсия корзины вырастет, а обращений про бонусы станет меньше.</p></div>'+
+   '<div class="about__cell"><div class="k">Решение</div><p>Строка бонусов под товаром, шторка «Как посчитана цена», правила простыми словами и сгорающие бонусы на виду. Всё на данных, которые уже считает бэкенд.</p></div>'+
+   '<div class="about__cell"><div class="k">Как измерить</div><p>A/B-тест: конверсия корзины в заказ, доля списанных бонусов, доля сгоревших акционных, обращения про бонусы, оценки в сторах.</p></div>'+
+   '</div><div class="author"><svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="18" fill="#1551E5"/><text x="18" y="23" text-anchor="middle" font-family="Onest,sans-serif" font-weight="700" font-size="14" fill="#fff">МК</text></svg><div>Дизайн: <b>Максим Кощеев</b>, UX/UI и продуктовый дизайнер<br><a href="https://portfoliomaksim.framer.website/" target="_blank" rel="noopener">портфолио</a> · <a href="https://t.me/maksim_koshcheev" target="_blank" rel="noopener">@maksim_koshcheev</a></div></div>'+
+   '<div class="disc">Концепт не связан с компанией «Спортмастер», данные вымышлены. Попробуйте: нажмите на строку под товаром, примените промокод SPORT10, выключите бонусы.</div>'+
+   '<button class="cta" type="button" data-close>Смотреть прототип</button></div>','about');
+}
+
+/* Тост */
+var tt;
+function toast(txt,act,fn){
+  $('toastTxt').textContent=txt;var a=$('toastAct');
+  if(act){a.style.display='';a.textContent=act;a.onclick=function(){fn();hideToast()}}else{a.style.display='none'}
+  $('toast').classList.add('is-on');clearTimeout(tt);tt=setTimeout(hideToast,4200);
+}
+function hideToast(){$('toast').classList.remove('is-on')}
+
+/* События */
+document.addEventListener('click',function(e){
+  var t=e.target.closest('button,[data-close]');if(!t)return;
+  if(t.hasAttribute('data-close')){closeSheet();return}
+  if(t.dataset.why){whySheet(t.dataset.why);return}
+  if(t.dataset.inc){var i=items.find(function(x){return x.id===t.dataset.inc});i.qty++;render();return}
+  if(t.dataset.dec){var j=items.find(function(x){return x.id===t.dataset.dec});if(j.qty>1){j.qty--;render()}return}
+  if(t.dataset.del){
+    var idx=items.findIndex(function(x){return x.id===t.dataset.del});var rem=items.splice(idx,1)[0];
+    state.lastRemoved={item:rem,idx:idx};render();
+    toast('Товар удалён','Вернуть',function(){items.splice(state.lastRemoved.idx,0,state.lastRemoved.item);render()});return;
+  }
+  switch(t.id){
+    case 'bonusSwitch':state.useBonus=!state.useBonus;render();toast(state.useBonus?'Бонусы списываются, начиная со сгорающих':'Списание бонусов выключено');break;
+    case 'howBtn':var h=$('how');h.classList.toggle('is-open');t.setAttribute('aria-expanded',h.classList.contains('is-open'));break;
+    case 'promoDel':state.promo=null;render();toast('Промокод удалён');break;
+    case 'openRules':rulesSheet();break;
+    case 'openAbout':aboutSheet();break;
+    case 'sheetClose':closeSheet();break;
+    case 'clearAll':var bak=items.slice();items.length=0;render();toast('Корзина очищена','Вернуть',function(){bak.forEach(function(x){items.push(x)});render()});break;
+    case 'restore':items=BASE.map(function(x){return Object.assign({qty:1},x)});render();break;
+    case 'ctaDesk':case 'ctaMob':
+      openSheet('<div class="sheet__in" style="text-align:center"><svg width="120" height="110" viewBox="0 0 120 110" aria-hidden="true" style="margin:8px auto 8px;display:block"><defs><radialGradient id="sg" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#9DF0BE"/><stop offset=".55" stop-color="#14A44D"/><stop offset="1" stop-color="#0B6E33"/></radialGradient></defs><ellipse cx="60" cy="102" rx="34" ry="5" fill="#000" opacity=".07"/><circle cx="60" cy="52" r="44" fill="url(#sg)"/><ellipse cx="46" cy="32" rx="16" ry="8" fill="#fff" opacity=".35"/><path d="m40 53 13 13 27-28" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg><h3 id="sheetTitle" style="padding:0">Дальше обычное оформление</h3><div class="sub">В концепте на этом сценарий заканчивается. К оплате <b>'+$('total').textContent+'</b>, бонусы и промокод уже учтены, сюрпризов на следующем шаге не будет.</div><button class="cta" type="button" data-close>Вернуться в корзину</button></div>');
+      break;
+  }
+});
+document.addEventListener('submit',function(e){
+  if(e.target.id!=='promoForm')return;e.preventDefault();
+  var inp=$('promoInput'),v=inp.value.trim().toUpperCase(),msg=$('promoMsg');
+  if(!v){inp.classList.add('is-error');msg.className='promo-msg err';msg.textContent='Введите промокод';inp.focus();return}
+  if(!PROMOS[v]){inp.classList.add('is-error');msg.className='promo-msg err';msg.textContent='Такого промокода нет. Попробуйте SPORT10';inp.focus();return}
+  state.promo=v;render();toast('Промокод '+v+' применён к товарам без жёлтого ценника');
+});
+document.addEventListener('input',function(e){if(e.target.id==='promoInput'){e.target.classList.remove('is-error');var m=$('promoMsg');if(m)m.textContent=''}});
+$('ov').addEventListener('click',function(e){if(e.target===this)closeSheet()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('ov').classList.contains('is-open'))closeSheet()});
+
+render();
+var seen=false;try{seen=localStorage.getItem('sm-cart-about')==='1';localStorage.setItem('sm-cart-about','1')}catch(err){}
+if(!seen)setTimeout(aboutSheet,350);
+})();
+</script>
+</body>
+</html>
